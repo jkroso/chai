@@ -19,7 +19,6 @@ suite('configuration', function () {
         assert.include(err.stack, 'fooThrows', 'should have stack trace in error message');
       }
     }
-
   });
 
   test('Assertion.includeStack is false', function () {
@@ -45,4 +44,20 @@ suite('configuration', function () {
     var err = new chai.AssertionError({ message: 'Chai!' });
     assert.equal(err.toString(), 'Chai!');
   });
+
+  test('Assertion.includeLine is true', function () {
+    var orig = chai.Assertion.includeLine;
+    chai.Assertion.includeLine = true;
+
+    try {
+      fooThrows();
+      assert.ok(false, 'should not get here because error thrown');
+    } catch (err) {
+      chai.Assertion.includeLine = orig;
+      // not all browsers support err.stack
+      if (typeof new Error().stack == 'string') {
+        assert.ok(/line:5/.test(err.message), 'should have line number in error message');
+      }
+    }
+  })
 });
